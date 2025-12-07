@@ -61,3 +61,21 @@ jobs:
           context: .
           push: true
           tags: kachallahfatima01/flaskapp:latest
+          
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    needs: [test, docker-build, docker-push]
+    if: failure()    # ✅ only runs if any previous job failed
+
+    steps:
+      - name: Send failure email (example)
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.example.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "CI Pipeline Failed for FlaskApp"
+          to: "your_email@example.com"
+          from: "ci-bot@example.com"
+          body: "One of the CI jobs failed. Please check the GitHub Actions logs."
